@@ -7,3 +7,9 @@ export class BodyPostUploadRequest{
     measure_type: MeasureType
 }
 
+export class BodyPatchConfirmRequest{
+    measure_uuid: string;
+    confirmed_value: number;
+}
+
+

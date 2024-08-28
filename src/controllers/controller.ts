@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { BodyPostUploadRequest } from './dto';
+import { BodyPatchConfirmRequest, BodyPostUploadRequest } from './dto';
 import { Connection as con  }  from "./../db/conection"
 import { Measures } from '../db/entity/measure.entity';
 import uploadImage from '../service/Gemini'
+import { error } from 'console';
 
 
 con.initialize().then(() => {
@@ -52,10 +53,43 @@ async function upload ( req: Request, res: Response) {
             measure_uuid: result.uuid 
         })
     }catch (error:any) {
-        res.status(400).send({"erro" : error.message})
+        res.status(500).send({"erro" : error.message})
+    }
+}
+
+
+async function confirm ( req: Request, res: Response) {
+    try {
+
+        const data:BodyPatchConfirmRequest = req.body
+
+        const result = await con.getRepository(Measures).findOne({
+            where : {
+                uuid : data.measure_uuid
+            }
+        });
+        if(!result){
+            res.status(404).send({
+                error_code:"MEASURE_NOT_FOUND",
+                "error_description": "Nenhuma leitura identificada"})
+            return
+        }else if(result.has_confirmed){
+            res.status(409).send({
+                error_code:"CONFIRMATION_DUPLICATE",
+                "error_description": "leitura já confirmada"})
+            return
+        }
+
+        result.measure_value = data.confirmed_value;
+        result.has_confirmed = true;
+        await con.getRepository(Measures).save(result); 
+        res.status(200).send({success: true})
+    } catch (error:any) {
+        res.status(500).send({'error': error.message})
     }
 }
 
 export default {
-    upload
+    upload,
+    confirm
 }
