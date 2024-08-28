@@ -6,3 +6,4 @@ export class BodyPostUploadRequest{
     measure_datetime: string;
     measure_type: MeasureType
 }
+

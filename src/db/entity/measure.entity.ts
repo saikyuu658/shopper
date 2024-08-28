@@ -8,20 +8,25 @@ export enum MeasureType {
 @Entity()
 export class Measures {
     @PrimaryGeneratedColumn('uuid')
-    measures_uuid: string
+    uuid: string
 
-    @CreateDateColumn()
-    measure_datetime: Date
+    @Column({
+        type : "timestamp with time zone"
+    })
+    datetime: Date
 
     @Column({
         type: "enum",
         enum: MeasureType,
         default: MeasureType.WATER
     })
-    measure_type: MeasureType
+    type: MeasureType
 
     @Column()
     has_confirmed: boolean
+
+    @Column()
+    measure_value: number
 
     @Column()
     image_url:string

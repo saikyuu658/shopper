@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import { Measures } from "./entity/measure.entity";
 
 export const Connection = new DataSource({
     type: 'postgres',
@@ -6,7 +7,10 @@ export const Connection = new DataSource({
     port: 5432,
     database: 'postgres',
     password: '@cessoFLFnti',
-    entities: ["./entity/**/*.ts"],
+    username: 'postgres',
+    entities: [
+       Measures
+    ],
     logging: true,
-    synchronize: false,
+    synchronize: true,
 })
