@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction } from 'express';
 import isBase64 from 'is-base64';
 import validator from 'validator';
-import { BodyPatchConfirmRequest, BodyPostUploadRequest } from '../controllers/dto';
+import { BodyPatchConfirmRequest, BodyPostUploadRequest, MeasureType } from '../controllers/dto';
 
 export function validateDataUpload(req: Request, res: Response, next: NextFunction){
     const data:BodyPostUploadRequest = req.body;
@@ -23,6 +23,18 @@ export function validateDataUpload(req: Request, res: Response, next: NextFuncti
     next();
 }
 
+export function validateDataList(req: Request, res: Response, next: NextFunction){
+    const data = req.query.measure_type;
+    if(data && !(data.toString().toUpperCase() in MeasureType)){
+        res.status(400).json({
+            error_code : "INVALID_TYPE",
+            error_description: "Tipo de medição não permitida"
+        })
+        return
+    }
+
+    next();
+}
 
 export function validateDataConfirm(req: Request, res: Response, next: NextFunction){
     const data:BodyPatchConfirmRequest = req.body;

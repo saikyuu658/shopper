@@ -1,9 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
+import { MeasureType } from "../../controllers/dto"
 
-export enum MeasureType {
-    GAS = "GAS",
-    WATER = "WATER"
-}
+
 
 @Entity()
 export class Measures {

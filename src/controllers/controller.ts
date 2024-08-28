@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { BodyPatchConfirmRequest, BodyPostUploadRequest } from './dto';
+import { BodyPatchConfirmRequest, BodyPostUploadRequest, MeasureType } from './dto';
 import { Connection as con  }  from "./../db/conection"
 import { Measures } from '../db/entity/measure.entity';
 import uploadImage from '../service/Gemini'
@@ -57,7 +57,6 @@ async function upload ( req: Request, res: Response) {
     }
 }
 
-
 async function confirm ( req: Request, res: Response) {
     try {
 
@@ -89,7 +88,37 @@ async function confirm ( req: Request, res: Response) {
     }
 }
 
+async function list(req: Request, res: Response){
+    try {
+        const customerCode = req.params.customerCode;
+        const queryParam =  req.query.measure_type?.toString();
+        let result = await con.getRepository(Measures).find({
+            where : {
+                customer_code : customerCode,
+            }
+        });
+        console.log(result.length)
+        if(!result){
+            res.status(404).send({
+                error_code:"MEASURE_NOT_FOUND",
+                "error_description": "Nenhum cliente identificado"})
+            return
+        }
+        if(queryParam){
+            result = result.filter((e)=>e.type.toUpperCase() == queryParam.toUpperCase())
+        }
+        res.status(200).send({
+            customer_code: customerCode,
+            measures : result
+        })
+    } catch (error:any) {
+        res.status(500).send({'error': error.message})
+    }
+
+}
+
 export default {
     upload,
-    confirm
+    confirm,
+    list
 }

@@ -1,5 +1,3 @@
-import { MeasureType } from "../db/entity/measure.entity";
-
 export class BodyPostUploadRequest{
     image: string;
     customer_code: string;
@@ -10,6 +8,11 @@ export class BodyPostUploadRequest{
 export class BodyPatchConfirmRequest{
     measure_uuid: string;
     confirmed_value: number;
+}
+
+export enum MeasureType {
+    GAS = "GAS",
+    WATER = "WATER"
 }
 
 
