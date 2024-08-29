@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from 'dotenv'; 
 import { BodyPostUploadRequest } from "../controllers/dto";
 import fs from 'fs'
+import jwt from 'jsonwebtoken'
 dotenv.config();
 
 const API_KEY  = process.env.GEMINI_API_KEY?? ''
@@ -25,9 +26,9 @@ async function uploadImage(val: BodyPostUploadRequest){
         displayName: "Measure",
     });
 
-    console.log(`Uploaded file ${uploadResponse.file.displayName} as: ${uploadResponse.file.uri}`)
     const resp = await readImage(uploadResponse)
-    return resp
+    const token = jwt.sign( {file: fileName+".png"}, 'pixotes', {expiresIn : "1h"})
+    return {resp: resp, fileName: fileName+".png", token: token}
 }
 
 async function readImage(uploadResult: UploadFileResponse) {

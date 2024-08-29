@@ -23,7 +23,7 @@ export class Measures {
     @Column()
     has_confirmed: boolean
 
-    @Column()
+    @Column({type: 'bigint', nullable: true})
     measure_value: number
 
     @Column()
