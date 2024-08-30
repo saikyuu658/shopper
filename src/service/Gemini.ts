@@ -13,7 +13,8 @@ async function uploadImage(val: BodyPostUploadRequest){
     try {
         const base64Data = val.image.replace(/^data:image\/png;base64,/, "")
         const buffer = Buffer.from(base64Data, 'base64');
-        fs.writeFileSync("C:/Users/david/Documents/shopper/src/service/storage/"+fileName+".png", buffer);
+
+        fs.writeFileSync("./storage/" +fileName.toString()+".png", buffer);
     } catch (err) {
         console.error("Erro ao salvar a imagem:", err);
     }
@@ -21,13 +22,13 @@ async function uploadImage(val: BodyPostUploadRequest){
 
     const fileManager = new GoogleAIFileManager(API_KEY);
 
-    const uploadResponse = await fileManager.uploadFile( __dirname+"/storage/"+fileName+".png", {
+    const uploadResponse = await fileManager.uploadFile( "./storage/"+fileName.toString()+".png", {
         mimeType: "image/png",
         displayName: "Measure",
     });
 
     const resp = await readImage(uploadResponse)
-    const token = jwt.sign( {file: fileName+".png"}, 'pixotes', {expiresIn : "1h"})
+    const token = jwt.sign( {file: fileName+".png"}, 'pixotes', {expiresIn : 60})
     return {resp: resp, fileName: fileName+".png", token: token}
 }
 

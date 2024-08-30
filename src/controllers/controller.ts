@@ -4,8 +4,7 @@ import { Connection as con  }  from "./../db/conection"
 import { Measures } from '../db/entity/measure.entity';
 import uploadImage from '../service/Gemini'
 import fs from 'fs'
-import jwt, { JwtPayload } from 'jsonwebtoken'; 
-import { Console } from 'console';
+import jwt from 'jsonwebtoken'; 
 
 
 con.initialize().then(() => {
@@ -13,6 +12,7 @@ con.initialize().then(() => {
     }).catch((err) => {
         console.error("Error during Data Source initialization:", err)
     })
+
 
 
 async function upload ( req: Request, res: Response) {
@@ -43,7 +43,7 @@ async function upload ( req: Request, res: Response) {
         sendToDb.datetime = new Date(data.measure_datetime);
         sendToDb.type = data.measure_type;
         sendToDb.measure_value = parseFloat(resp.resp);
-        sendToDb.image_url = "C:/Users/david/Documents/shopper/src/service/storage/"+resp.fileName;
+        sendToDb.image_url = "./storage/"+resp.fileName;
         sendToDb.has_confirmed = false;
         
         const result = await con.getRepository(Measures).save(sendToDb)
@@ -122,18 +122,18 @@ async function getImage(req: Request, res: Response){
     
    try {
     const {image} = req.params;
-    const t = jwt.decode(image)
+    const t = jwt.verify(image, 'pixotes')
     if(!t || typeof(t) == 'string'){
         res.write('Tempo expirado!')
         return 
     }
-    fs.readFile('./src/service/storage/'+ t.file, function (err, data) {
+    fs.readFile('./storage/'+ t.file, function (err, data) {
         if (err) throw err;
         res.write(data);
         return 
     });
-   } catch (error) {
-        res.status(500).send('Erro')
+   } catch (error:any) {
+        res.status(500).send("Tempo expirado")
    }
 
 }
