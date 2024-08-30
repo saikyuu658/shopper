@@ -6,7 +6,7 @@ export const Connection = new DataSource({
     host: 'localhost',
     port: 5432,
     database: 'postgres',
-    password: '@cessoFLFnti',
+    password: '123shopper',
     username: 'postgres',
     entities: [
        Measures
