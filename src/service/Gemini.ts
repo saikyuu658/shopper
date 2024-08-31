@@ -8,6 +8,7 @@ dotenv.config();
 
 const API_KEY  = process.env.GEMINI_API_KEY?? ''
 
+
 async function uploadImage(val: BodyPostUploadRequest){
     const fileName = Date.now();
     try {
@@ -33,19 +34,23 @@ async function uploadImage(val: BodyPostUploadRequest){
 }
 
 async function readImage(uploadResult: UploadFileResponse) {
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent([
-    "Identify the exact number displayed on the meter's digital display in this image. Ignore other visual elements and provide only the measurement",
-    {
-        fileData: {
-        fileUri: uploadResult.file.uri,
-        mimeType: uploadResult.file.mimeType,
+    try {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent([
+        "Identify the exact number displayed on the meter's digital display in this image. Ignore other visual elements and provide only the measurement",
+        {
+            fileData: {
+            fileUri: uploadResult.file.uri,
+            mimeType: uploadResult.file.mimeType,
+            },
         },
-    },
-    ]);
-    return result.response.text();
+        ]);
+        return result.response.text();
 
+    } catch (error) {
+        throw new Error('Erro na conexão com a GEMINI ')
+    }
 }
 
 export default uploadImage
